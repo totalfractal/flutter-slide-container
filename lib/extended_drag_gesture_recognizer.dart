@@ -20,7 +20,7 @@ class LockableVerticalDragGestureRecognizer
   SlideContainerLock get lock => lockGetter();
 
   @override
-  bool isFlingGesture(VelocityEstimate estimate) {
+  bool isFlingGesture(VelocityEstimate estimate, PointerDeviceKind kind) {
     final double minVelocity = minFlingVelocity ?? kMinFlingVelocity;
     final double minDistance = minFlingDistance ?? kTouchSlop;
     if ((lock == SlideContainerLock.top && estimate.pixelsPerSecond.dy < 0.0) ||
@@ -69,7 +69,7 @@ class LockableHorizontalDragGestureRecognizer
   SlideContainerLock get lock => lockGetter();
 
   @override
-  bool isFlingGesture(VelocityEstimate estimate) {
+  bool isFlingGesture(VelocityEstimate estimate, PointerDeviceKind kind) {
     final double minVelocity = minFlingVelocity ?? kMinFlingVelocity;
     final double minDistance = minFlingDistance ?? kTouchSlop;
     if ((lock == SlideContainerLock.left &&
@@ -125,7 +125,7 @@ abstract class ExtendedDragGestureRecognizer extends DragGestureRecognizer {
   Offset _pendingDragOffset;
   Duration _lastPendingEventTimestamp;
 
-  bool isFlingGesture(VelocityEstimate estimate);
+  bool isFlingGesture(VelocityEstimate estimate, PointerDeviceKind kind);
 
   Offset _getDeltaForDetails(Offset delta);
 
@@ -235,7 +235,8 @@ abstract class ExtendedDragGestureRecognizer extends DragGestureRecognizer {
       assert(tracker != null);
 
       final VelocityEstimate estimate = tracker.getVelocityEstimate();
-      if (estimate != null && isFlingGesture(estimate)) {
+      if (estimate != null &&
+          isFlingGesture(estimate, PointerDeviceKind.touch)) {
         final Velocity velocity =
             Velocity(pixelsPerSecond: estimate.pixelsPerSecond).clampMagnitude(
                 minFlingVelocity ?? kMinFlingVelocity,
